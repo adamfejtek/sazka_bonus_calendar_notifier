@@ -158,14 +158,17 @@ class SazkaClient:
         return bonuses
 
     def _get_calendar(self, soup: BeautifulSoup) -> Calendar:
-        calendar = Calendar()
         caledar_section = soup.find("section", class_="bonuses-calendar")
-        calendar.title = " ".join(self._fix_text(div.text) for div in caledar_section.find("h2", class_="bonuses-calendar__header").find_all("div"))
-        calendar.subtitle = self._fix_text(soup.find("h2", class_="lp-cta-visual__header").text)
-        calendar.text = self._fix_text(soup.find("div", class_="lp-cta-visual__text").text)
-        calendar.bonuses = self._get_calendar_bonuses(soup)
-        calendar.start_datetime = calendar.bonuses[0].start_datetime
-        calendar.end_datetime = calendar.bonuses[-1].end_datetime
+        calendar_bonuses = self._get_calendar_bonuses(soup)
+        calendar = Calendar(
+            title = " ".join(self._fix_text(div.text) for div in caledar_section.find("h2", class_="bonuses-calendar__header").find_all("div")),
+            subtitle = self._fix_text(soup.find("h2", class_="lp-cta-visual__header").text),
+            text = self._fix_text(soup.find("div", class_="lp-cta-visual__text").text),
+            url = "",
+            bonuses = calendar_bonuses,
+            start_datetime = calendar_bonuses[0].start_datetime,
+            end_datetime = calendar_bonuses[-1].end_datetime
+        )
         return calendar
 
     def get_calendars(self) -> list[Calendar]:
