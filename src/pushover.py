@@ -4,7 +4,7 @@ from enum import StrEnum
 from typing import Literal, Self
 
 import requests
-from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator, field_serializer
 
 BASE_URL = "https://api.pushover.net/1/"
 VALIDATION_URL = BASE_URL + "users/validate.json"
@@ -136,6 +136,14 @@ class Message(BaseModel):
         if self.html and self.monospace:
             raise ValueError("Parameters HTML and monospace cannot be both set to true")
         return self
+    
+    @field_serializer("html")
+    def serialize_html(self, value: bool) -> int:
+        return 1 if value else 0
+
+    @field_serializer("monospace")
+    def serialize_monospace(self, value: bool) -> int:
+        return 1 if value else 0
 
 
 class Limits(BaseModel):
