@@ -1,6 +1,8 @@
 from functools import cache
-from pydantic import Field, EmailStr, SecretStr
+
+from pydantic import EmailStr, SecretStr
 from pydantic_settings import BaseSettings
+
 
 class Config(BaseSettings):
     sazka_email: EmailStr
@@ -9,6 +11,9 @@ class Config(BaseSettings):
     pushover_user_key: SecretStr
     pushover_api_token: SecretStr
 
+    metadata_filepath: str = "metadata.txt"
+
+
 @cache
-def get_config() -> Config:
+def get_instance() -> Config:
     return Config()
