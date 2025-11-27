@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import TypeAlias
 
@@ -6,6 +7,16 @@ from pydantic import BaseModel, TypeAdapter
 import config
 from pushover import Message, PushoverClient
 from sazka import SazkaClient
+
+logger = logging.getLogger("sazka_bonus_calendar_notifier")
+logger.setLevel(logging.INFO)
+logger_handler = logging.StreamHandler()
+logger_handler.setLevel(logging.INFO)
+logger_formatter = logging.Formatter(
+    "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
+)
+logger_handler.setFormatter(logger_formatter)
+logger.addHandler(logger_handler)
 
 config = config.get_instance()
 sazka_client = SazkaClient(config.sazka_email, config.sazka_password.get_secret_value())
@@ -37,11 +48,23 @@ def set_notification_list(notification_list: list[BonusNotification]) -> None:
 def main() -> None:
     notification_list = get_notification_list()
     calendars = sazka_client.get_calendars()
+
+    if calendars:
+        logger.info(f"Found {len(calendars)} active bonus calendars")
+    else:
+        logger.info("There are currently no active bonus calendars")
+
     for calendar in calendars:
         active_bonuses = [bonus for bonus in calendar.bonuses if bonus.state == 1]
+
+        if not active_bonuses:
+            logger.info(f"{calendar.title} -> There are currently no active bonuses")
+
         for bonus in active_bonuses:
             if any(notification.bonus_id == bonus.id for notification in notification_list):
+                logger.info(f"{calendar.title} -> {bonus.title} -> Already notified about this bonus")
                 continue
+
             notified_at = datetime.now()
             message = Message(
                 title=f"Sazka: {calendar.title}",
@@ -52,6 +75,8 @@ def main() -> None:
             )
             pushover_client.send_message(message)
             notification_list.append(BonusNotification(bonus_id=bonus.id, notified_at=notified_at))
+
+            logger.info(f"{calendar.title} -> {bonus.title} -> Sent a notification")
     set_notification_list(notification_list)
 
 
