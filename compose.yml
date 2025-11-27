@@ -1,0 +1,9 @@
+services:
+  notifier:
+    container_name: sazka_bonus_calendar_notifier
+    image: adamfejtek/sazka_bonus_calendar_notifier
+    build: ./
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data
