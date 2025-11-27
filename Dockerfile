@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.22
+FROM python:3.13-alpine3.22
 
 WORKDIR /app
 
@@ -9,4 +9,4 @@ COPY src/* .
 RUN pip install -r requirements.txt
 RUN crontab crontab
 
-CMD ["crond" "-f"]
+CMD ["crond", "-f"]
