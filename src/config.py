@@ -5,13 +5,13 @@ from pydantic_settings import BaseSettings
 
 
 class Config(BaseSettings):
-    sazka_email: EmailStr
-    sazka_password: SecretStr
+    SAZKA_EMAIL: EmailStr
+    SAZKA_PASSWORD: SecretStr
 
-    pushover_user_key: SecretStr
-    pushover_api_token: SecretStr
+    PUSHOVER_USER_KEY: SecretStr
+    PUSHOVER_API_TOKEN: SecretStr
 
-    metadata_filepath: str = "metadata.txt"
+    METADATA_FILEPATH: str = "metadata.txt"
 
 
 @cache

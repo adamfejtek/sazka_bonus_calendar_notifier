@@ -1,3 +1,4 @@
+import os
 import logging
 from datetime import datetime
 from typing import TypeAlias
@@ -19,11 +20,15 @@ logger_handler.setFormatter(logger_formatter)
 logger.addHandler(logger_handler)
 
 config = config.get_instance()
-sazka_client = SazkaClient(config.sazka_email, config.sazka_password.get_secret_value())
+sazka_client = SazkaClient(config.SAZKA_EMAIL, config.SAZKA_PASSWORD.get_secret_value())
 pushover_client = PushoverClient(
     config.pushover_api_token.get_secret_value(),
     config.pushover_user_key.get_secret_value(),
 )
+
+metadata_directory = os.path.dirname(config.METADATA_FILEPATH)
+if metadata_directory:
+    os.makedirs(metadata_directory, parents=True, exist_ok=True)
 
 
 class BonusNotification(BaseModel):
@@ -36,6 +41,8 @@ NotificationListModel = TypeAdapter(NotificationList)
 
 
 def get_notification_list() -> list[BonusNotification]:
+    if not os.path.exists(config.METADATA_FILEPATH):
+        return []
     with open(config.metadata_filepath, "rb") as file:
         return NotificationListModel.validate_json(file.read())
 
