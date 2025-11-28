@@ -20,8 +20,8 @@ logger.addHandler(logger_handler)
 config = config.get_instance()
 sazka_client = SazkaClient(config.SAZKA_EMAIL, config.SAZKA_PASSWORD.get_secret_value())
 pushover_client = PushoverClient(
-    config.pushover_api_token.get_secret_value(),
-    config.pushover_user_key.get_secret_value(),
+    config.PUSHOVER_API_TOKEN.get_secret_value(),
+    config.PUSHOVER_USER_KEY.get_secret_value(),
 )
 
 metadata_directory = os.path.dirname(config.METADATA_FILEPATH)
@@ -41,12 +41,12 @@ NotificationListModel = TypeAdapter(NotificationList)
 def get_notification_list() -> list[BonusNotification]:
     if not os.path.exists(config.METADATA_FILEPATH):
         return []
-    with open(config.metadata_filepath, "rb") as file:
+    with open(config.METADATA_FILEPATH, "rb") as file:
         return NotificationListModel.validate_json(file.read())
 
 
 def set_notification_list(notification_list: list[BonusNotification]) -> None:
-    with open(config.metadata_filepath, "wb") as file:
+    with open(config.METADATA_FILEPATH, "wb") as file:
         file.write(NotificationListModel.dump_json(notification_list))
 
 
