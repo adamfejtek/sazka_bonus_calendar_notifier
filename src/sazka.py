@@ -37,7 +37,7 @@ class CalendarBonusButton(BaseModel):
 
 class CalendarBonus(BaseModel):
     id: int
-    title: str
+    title: str | None = None
     text: str
     image_url: str
     left_button: CalendarBonusButton | None = None
@@ -144,7 +144,7 @@ class SazkaClient:
             bonus = CalendarBonus(
                 id = bonus_data.get("id"),
                 title = bonus_popup.get("title"),
-                text = bonus_popup.get("text"),
+                text = bonus_popup.get("text", "").replace("\r\n", ""),
                 image_url = bonus_data.get("image"),
                 state = bonus_data.get("state"),
                 end_datetime = end_datetime,
