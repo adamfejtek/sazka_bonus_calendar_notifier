@@ -1,1 +1,1 @@
-1 12 * * * python /app/main.py
+1 12,14 * * * python /app/main.py
